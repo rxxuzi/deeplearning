@@ -29,7 +29,11 @@ class Var:
                 gxs = (gxs,)
 
             for x, gx in zip(f.inputs, gxs):
-                x.grad = gx
+                # x.grad = gx
+                if x.grad is None:
+                    x.grad = gx
+                else:
+                    x.grad = x.grad + gx
 
                 if x.creator is not None:
                     funcs.append(x.creator)
@@ -85,14 +89,7 @@ class Square(Function):
 def square(x):
     return Square()(x)
 
-x = Var(np.array(3.0))
-y = Var(np.array(4.0))
-
-z = add(square(x), square(y))
-z.backward()
-
-print("x^2 = " + str(x.data))
-print("y^2 = " + str(y.data))
-print("x^2 + y^2 = " + str(z.data))
-print(y.grad)
+x = Var(np.array(2.0))
+y = add(x,x)
+y.backward()
 print(x.grad)
