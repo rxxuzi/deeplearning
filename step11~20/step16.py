@@ -1,7 +1,9 @@
 import numpy as np
 
+
 def v(*x):
     return np.array(x)
+
 
 class Var:
     def __init__(self, data):
@@ -9,21 +11,33 @@ class Var:
             if not isinstance(data, np.ndarray):
                 raise TypeError('{} is not supported'.format(type(data)))
 
-        self.data = data
-        self.grad = None
-        self.creator = None
+        self.data = data  # 数値
+        self.grad = None  # 微分値
+        self.creator = None  # 生成者
+        self.generation = 0  # 世代
 
-    def cleangrad(self):
+    def clean_grad(self):
         self.grad = None
 
     def set_creator(self, func):
         self.creator = func
+        self.generation = func.generation + 1
 
     def backward(self):
         if self.grad is None:
             self.grad = np.ones_like(self.data)
 
-        funcs = [self.creator]
+        funcs = []
+        seen_set = set()
+
+        def add_func(f):
+            if f not in seen_set:
+                funcs.append(f)
+                seen_set.add(f)
+                funcs.sort(key=lambda x: x.generation)
+
+        add_func(self.creator)
+
         while funcs:
             f = funcs.pop()
             gys = [output.grad for output in f.outputs]
@@ -39,7 +53,7 @@ class Var:
                     x.grad = x.grad + gx
 
                 if x.creator is not None:
-                    funcs.append(x.creator)
+                    add_func(x.creator)
 
 
 def as_array(x):
@@ -51,12 +65,13 @@ def as_array(x):
 class Function:
     def __call__(self, *inputs):
         xs = [x.data for x in inputs]
-        ys = self.forward(*xs) # アンパッキング
-        if not isinstance(ys, tuple): # タプルでない場合は追加
+        ys = self.forward(*xs)  # アンパッキング
+        if not isinstance(ys, tuple):  # タプルでない場合は追加
             ys = (ys,)
 
         outputs = [Var(as_array(y)) for y in ys]
 
+        self.generation = max([x.generation for x in inputs])
         for output in outputs:
             output.set_creator(self)
 
@@ -78,8 +93,10 @@ class Add(Function):
     def backward(self, gy):
         return gy, gy
 
+
 def add(x0, x1):
     return Add()(x0, x1)
+
 
 class Square(Function):
     def forward(self, x):
@@ -89,16 +106,17 @@ class Square(Function):
         x = self.inputs[0].data
         return 2 * x * gy
 
+
 def square(x):
     return Square()(x)
 
-x = Var(np.array(2.0))
-y = add(x,x)
-y.backward()
-print(x.grad)
 
-x.cleangrad()
+x = Var(np.array(2.0))  # x  = 2.0
 
-y = add(square(x), square(x))
-y.backward()
-print(x.grad)
+a = square(x)  # x^2
+b = add(square(a), square(a))  # x^4 + x^4
+b.backward()  # 微分
+# b' = 4x^3 + 4x^3
+
+
+print(x.grad)  # 4.0

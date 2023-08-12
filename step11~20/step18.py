@@ -9,21 +9,34 @@ class Var:
             if not isinstance(data, np.ndarray):
                 raise TypeError('{} is not supported'.format(type(data)))
 
-        self.data = data
-        self.grad = None
-        self.creator = None
+        self.data = data    # 数値
+        self.grad = None    # 微分値
+        self.creator = None # 生成者
+        self.generation = 0 # 世代
 
-    def cleangrad(self):
+    def clean_grad(self):
         self.grad = None
 
     def set_creator(self, func):
         self.creator = func
+        self.generation = func.generation + 1
 
-    def backward(self):
+    def backward(self, retain_grad = False):
         if self.grad is None:
             self.grad = np.ones_like(self.data)
 
-        funcs = [self.creator]
+        funcs = []
+        seen_set = set()
+
+        def add_func(f):
+            if f not in seen_set:
+                funcs.append(f)
+                seen_set.add(f)
+                funcs.sort(key=lambda x: x.generation)
+
+
+        add_func(self.creator)
+
         while funcs:
             f = funcs.pop()
             gys = [output.grad for output in f.outputs]
@@ -39,7 +52,12 @@ class Var:
                     x.grad = x.grad + gx
 
                 if x.creator is not None:
-                    funcs.append(x.creator)
+                    add_func(x.creator)
+
+
+            if not retain_grad:
+                for y in f.outputs:
+                    y().grad = None
 
 
 def as_array(x):
@@ -57,6 +75,7 @@ class Function:
 
         outputs = [Var(as_array(y)) for y in ys]
 
+        self.generation = max([x.generation for x in inputs])
         for output in outputs:
             output.set_creator(self)
 
@@ -91,14 +110,3 @@ class Square(Function):
 
 def square(x):
     return Square()(x)
-
-x = Var(np.array(2.0))
-y = add(x,x)
-y.backward()
-print(x.grad)
-
-x.cleangrad()
-
-y = add(square(x), square(x))
-y.backward()
-print(x.grad)

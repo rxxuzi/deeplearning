@@ -13,7 +13,7 @@ class Var:
         self.grad = None
         self.creator = None
 
-    def cleangrad(self):
+    def clean_grad(self):
         self.grad = None
 
     def set_creator(self, func):
@@ -97,7 +97,7 @@ y = add(x,x)
 y.backward()
 print(x.grad)
 
-x.cleangrad()
+x.clean_grad()
 
 y = add(square(x), square(x))
 y.backward()
