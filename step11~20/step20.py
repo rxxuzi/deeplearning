@@ -1,9 +1,13 @@
+import weakref
 import numpy as np
+
+
+class Config:
+    enable_backprop = True
+
 
 def v(*x):
     return np.array(x)
-
-
 
 class Var:
     def __init__(self, data, name = None):
@@ -17,32 +21,31 @@ class Var:
         self.creator = None # 生成者
         self.generation = 0 # 世代
 
-    # 要素数を取得
-    def __len__(self):
+    def __len__(self):      # 要素数を取得
         return len(self.data)
 
-    # 微分値を消去
-    def clean_grad(self):
+    def __add__(self, other):
+        return add(self,other)
+    def __mul__(self, other):# 演算子のオーバーロード
+        return mul(self, other)
+
+    def clean_grad(self):   # 微分値を消去
         self.grad = None
 
-    # 多次元配列の形状を取得
     @property
-    def shape(self):
+    def shape(self):        # 多次元配列の形状を取得
         return self.data.shape
 
-    # 次元の数を取得
     @property
-    def ndim(self):
+    def ndim(self):         # 次元の数を取得
         return self.data.ndim
 
-    # 要素の数
     @property
-    def size(self):
+    def size(self):         # 要素の数
         return self.data.size
 
-    # データの型を取得
     @property
-    def dtype(self):
+    def dtype(self):        # データの型を取得
         return self.data.dtype
 
     def set_creator(self, func):
@@ -56,24 +59,23 @@ class Var:
         funcs = []
         seen_set = set()
 
+
         def add_func(f):
             if f not in seen_set:
                 funcs.append(f)
                 seen_set.add(f)
                 funcs.sort(key=lambda x: x.generation)
 
-
         add_func(self.creator)
 
         while funcs:
             f = funcs.pop()
-            gys = [output.grad for output in f.outputs]
+            gys = [output().grad for output in f.outputs]  # output is weakref
             gxs = f.backward(*gys)
             if not isinstance(gxs, tuple):
                 gxs = (gxs,)
 
             for x, gx in zip(f.inputs, gxs):
-                # x.grad = gx
                 if x.grad is None:
                     x.grad = gx
                 else:
@@ -82,10 +84,9 @@ class Var:
                 if x.creator is not None:
                     add_func(x.creator)
 
-
             if not retain_grad:
                 for y in f.outputs:
-                    y().grad = None
+                    y().grad = None  # y is weakref
 
     # toString
     def __repr__(self):
@@ -93,6 +94,7 @@ class Var:
             return 'Var(none)'
         p = str(self.data).replace('\n','\n' + ' ' * 9)
         return 'Var(' + p + ')'
+
 
 
 def as_array(x):
@@ -110,9 +112,10 @@ class Function:
 
         outputs = [Var(as_array(y)) for y in ys]
 
-        self.generation = max([x.generation for x in inputs])
-        for output in outputs:
-            output.set_creator(self)
+        if Config.enable_backprop :
+            self.generation = max([x.generation for x in inputs])
+            for output in outputs:
+                output.set_creator(self)
 
         self.inputs = inputs
         self.outputs = outputs
@@ -135,6 +138,17 @@ class Add(Function):
 def add(x0, x1):
     return Add()(x0, x1)
 
+class Mul(Function):
+    def forward(self, x0, x1):
+        return  x0 * x1
+
+    def backward(self, gy):
+        x0, x1 = self.inputs[0].data , self.inputs[1].data
+        return gy * x1 , gy * x0
+
+def mul(x0 , x1):
+    return Mul()(x0,x1)
+
 class Square(Function):
     def forward(self, x):
         return x ** 2
@@ -146,13 +160,22 @@ class Square(Function):
 def square(x):
     return Square()(x)
 
-x = np.array([[1,2,3],
-              [4,5,6],
-              [7,8,9]])
 
-print(x.shape)
-print(x.ndim)
-print(x.size)
-print(x.dtype)
-print(len(x))
-print(x)
+Var.__add__ = add
+Var.__mul__ = mul
+
+
+x = Var(np.array(
+    [[1,2,3],
+     [4,5,6],
+     [7,8,9]]
+))
+
+a = Var(np.array(3.0))
+b = Var(np.array(2.0))
+c = Var(np.array(5.0))
+
+y = (a + b) * c
+y.backward()
+
+print(y)
