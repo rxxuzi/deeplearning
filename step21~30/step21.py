@@ -1,37 +1,33 @@
 import weakref
 import numpy as np
-import contextlib
 
 
 class Config:
     enable_backprop = True
 
-
-@contextlib.contextmanager
-def using_config(name, value):
-    old_value = getattr(Config, name)
-    setattr(Config, name, value)
-    try:
-        yield
-    finally:
-        setattr(Config, name, old_value)
-
-
-def no_grad():
-    return using_config('enable_backprop', False)
-
-
 class Var:
-    def __init__(self, data, name=None):
+    __array_priority__ = 200
+    def __init__(self, data, name = None):
         if data is not None:
             if not isinstance(data, np.ndarray):
                 raise TypeError('{} is not supported'.format(type(data)))
 
-        self.name = name  # 変数名
-        self.data = data  # 数値
-        self.grad = None  # 微分値
-        self.creator = None  # 生成者
-        self.generation = 0  # 世代
+        self.name = name    # 変数名
+        self.data = data    # 数値
+        self.grad = None    # 微分値
+        self.creator = None # 生成者
+        self.generation = 0 # 世代
+
+    def __len__(self):      # 要素数を取得
+        return len(self.data)
+
+    def __add__(self, other):
+        return add(self,other)
+    def __mul__(self, other):# 演算子のオーバーロード
+        return mul(self, other)
+
+    def clean_grad(self):   # 微分値を消去
+        self.grad = None
 
     @property
     def shape(self):        # 多次元配列の形状を取得
@@ -49,23 +45,11 @@ class Var:
     def dtype(self):        # データの型を取得
         return self.data.dtype
 
-    def __len__(self):      # 要素数
-        return len(self.data)
-
-    def __repr__(self): # toString
-        if self.data is None:
-            return 'variable(None)'
-        p = str(self.data).replace('\n', '\n' + ' ' * 9)
-        return 'variable(' + p + ')'
-
     def set_creator(self, func):
         self.creator = func
-        self.generation = func.generation + 1
+        self.generation = func.generation + 1 # 世代をインクリメント
 
-    def clean_grad(self):  # 微分値を消去
-        self.grad = None
-
-    def backward(self, retain_grad=False):
+    def backward(self, retain_grad = False):
         if self.grad is None:
             self.grad = np.ones_like(self.data)
 
@@ -100,15 +84,30 @@ class Var:
                 for y in f.outputs:
                     y().grad = None  # y is weakref
 
+    # toString
+    def __repr__(self):
+        if self.data is None:
+            return 'Var(none)'
+        p = str(self.data).replace('\n','\n' + ' ' * 9)
+        return 'Var(' + p + ')'
+
+
 
 def as_array(x):
     if np.isscalar(x):
         return np.array(x)
     return x
 
+# objがVarインスタンスじゃない場合、Varインスタンスとして返す
+def as_var(obj):
+    if isinstance(obj, Var):
+        return obj
+    return Var(obj)
 
 class Function:
     def __call__(self, *inputs):
+        inputs = [as_var(x) for x in inputs] #　各要素xをVarインスタンスに変換
+
         xs = [x.data for x in inputs]
         ys = self.forward(*xs)
         if not isinstance(ys, tuple):
@@ -141,6 +140,7 @@ class Add(Function):
 
 
 def add(x0, x1):
+    x1 = as_array(x1)
     return Add()(x0, x1)
 
 
@@ -153,22 +153,39 @@ class Mul(Function):
         x0, x1 = self.inputs[0].data, self.inputs[1].data
         return gy * x1, gy * x0
 
-
 def mul(x0, x1):
+    x1 = as_array(x1)
     return Mul()(x0, x1)
+
+class Square(Function):
+    def forward(self, x):
+        return x ** 2
+
+    def backward(self, gy):
+        x = self.inputs[0].data
+        return 2 * x * gy
+
+def square(x):
+    return Square()(x)
 
 
 Var.__add__ = add
 Var.__mul__ = mul
+Var.__radd__ = add
+Var.__rmul__ = mul
 
-a = Var(np.array(3.0))
-b = Var(np.array(2.0))
-c = Var(np.array(1.0))
 
-# y = add(mul(a, b), c)
-y = a * b + c
-y.backward()
 
-print(y)
-print(a.grad)
-print(b.grad)
+x = Var(np.array(
+    [[1,2,3],
+     [4,5,6],
+     [7,8,9]]
+))
+
+
+#　行列x * スカラ a
+y = x * 3.0
+print(y.data)
+
+y = 5.0 + x
+print(y.data)
