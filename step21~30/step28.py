@@ -1,6 +1,6 @@
 # ローゼンブロック関数
 # Code snippet from step27.py
-
+# 勾配降下法
 from dezero import Var
 import numpy as np
 

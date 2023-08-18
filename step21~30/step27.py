@@ -28,14 +28,18 @@ def mysin(x, threshold=0.0001):
             break
     return y
 
-x = Var(np.array(np.pi/4))
+x = Var(np.array(np.pi/3))
 y = sin(x)
 y.backward()
 
-print(y.data)
-print(x.grad)
+print("f = sin(x) , x = pi/3")
+print(f"f(x) = {y.data}")
+print(f"f'(x) = {x.grad}")
+# print(x.grad)
 x.clean_grad()
+
+print("テイラー展開")
 y  = mysin(x)
 y.backward()
-print(y.data)
-print(x.grad)
+print(f"f(x) = {y.data}")
+print(f"f'(x) = {x.grad}")
