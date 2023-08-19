@@ -3,7 +3,7 @@ import numpy as np
 
 
 class Config:
-    enable_backprop = True
+    enable_backprop = True #逆伝播を有効/無効
 
 
 class Var:
@@ -46,6 +46,9 @@ class Var:
         return neg(self)
 
     def clean_grad(self):  # 微分値を消去
+        self.grad = None
+
+    def cleargrad(self):
         self.grad = None
 
     @property
