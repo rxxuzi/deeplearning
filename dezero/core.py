@@ -1,3 +1,4 @@
+import contextlib
 import weakref
 import numpy as np
 
@@ -5,6 +6,14 @@ import numpy as np
 class Config:
     enable_backprop = True #逆伝播を有効/無効
 
+@contextlib.contextmanager
+def using_config(name, value):
+    old_value = getattr(Config, name)
+    setattr(Config, name, value)
+    try:
+        yield
+    finally:
+        setattr(Config, name, old_value)
 
 class Var:
     __array_priority__ = 200
@@ -73,7 +82,7 @@ class Var:
 
     def backward(self, retain_grad=False):
         if self.grad is None:
-            self.grad = np.ones_like(self.data)
+            self.grad = Var(np.ones_like(self.data))
 
         funcs = []
         seen_set = set()
@@ -89,18 +98,20 @@ class Var:
         while funcs:
             f = funcs.pop()
             gys = [output().grad for output in f.outputs]  # output is weakref
-            gxs = f.backward(*gys)
-            if not isinstance(gxs, tuple):
-                gxs = (gxs,)
 
-            for x, gx in zip(f.inputs, gxs):
-                if x.grad is None:
-                    x.grad = gx
-                else:
-                    x.grad = x.grad + gx
+            with using_config('enable_backprop', False):
+                gxs = f.backward(*gys)
+                if not isinstance(gxs, tuple):
+                    gxs = (gxs,)
 
-                if x.creator is not None:
-                    add_func(x.creator)
+                for x, gx in zip(f.inputs, gxs):
+                    if x.grad is None:
+                        x.grad = gx
+                    else:
+                        x.grad = x.grad + gx
+
+                    if x.creator is not None:
+                        add_func(x.creator)
 
             if not retain_grad:
                 for y in f.outputs:
