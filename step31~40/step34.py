@@ -1,17 +1,29 @@
+if '__file__' in globals():
+    import os, sys
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 import numpy as np
+import matplotlib.pyplot as plt
 from dezero import Var
 import dezero.functions as F
-from dezero.functions import sin, cos
 
-x = Var(np.array(1.0))
-
+x = Var(np.linspace(-7, 7 , 200))
 y = F.sin(x)
-print(y)
-
 y.backward(create_graph=True)
 
+logs = [y.data.flatten()]
+
 for i in range(3):
+    logs.append(x.grad.data.flatten())
     gx = x.grad
     x.cleargrad()
     gx.backward(create_graph=True)
-    print(f"{i}階微分 : gx = {gx.data}, x = {x.data}")
+    print(f"{i+1}階微分 x = {x.data}, gx = {x.grad}")
+
+labels = ["y=sin(x)" , "y'", "y''","y'''"]
+
+for i , v in enumerate(logs):
+    plt.plot(x.data, logs[i] , label = labels[i])
+
+plt.legend(loc = 'lower right')
+plt.show()

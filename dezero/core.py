@@ -83,9 +83,10 @@ class Var:
     def backward(self, retain_grad=False , create_graph = False):
         """
         :param retain_grad: 全ての変数が微分を保持するか(Falseの場合、微分値をリセット)
-        :param create_graph: 逆伝播の処理
+        :param create_graph: 逆伝播の処理をするか
         :return:
         """
+
         if self.grad is None:
             self.grad = Var(np.ones_like(self.data)) # 微分を自動補充
 
