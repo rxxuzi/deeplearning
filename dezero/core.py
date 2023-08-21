@@ -80,9 +80,14 @@ class Var:
         self.creator = func
         self.generation = func.generation + 1  # 世代をインクリメント
 
-    def backward(self, retain_grad=False):
+    def backward(self, retain_grad=False , create_graph = False):
+        """
+        :param retain_grad: 全ての変数が微分を保持するか(Falseの場合、微分値をリセット)
+        :param create_graph: 逆伝播の処理
+        :return:
+        """
         if self.grad is None:
-            self.grad = Var(np.ones_like(self.data))
+            self.grad = Var(np.ones_like(self.data)) # 微分を自動補充
 
         funcs = []
         seen_set = set()
@@ -99,7 +104,7 @@ class Var:
             f = funcs.pop()
             gys = [output().grad for output in f.outputs]  # output is weakref
 
-            with using_config('enable_backprop', False):
+            with using_config('enable_backprop', create_graph):
                 gxs = f.backward(*gys)
                 if not isinstance(gxs, tuple):
                     gxs = (gxs,)
@@ -116,6 +121,16 @@ class Var:
             if not retain_grad:
                 for y in f.outputs:
                     y().grad = None  # y is weakref
+
+    def unchain_backward(self):
+        if self.creator is not None:
+            funcs = [self.creator]
+            while funcs:
+                f = funcs.pop()
+                for x in f.inputs:
+                    if x.creator is not None:
+                        funcs.append(x.creator)
+                        x.unchain()
 
     # toString
     def __repr__(self):
@@ -257,9 +272,8 @@ class Pow(Function):
         return y
 
     def backward(self, gy):
-        x = self.inputs[0].data
+        x, = self.inputs
         c = self.c
-
         gx = c * x ** (c - 1) * gy
         return gx
 
@@ -278,3 +292,4 @@ def setup():
     Var.__truediv__ = div
     Var.__rtruediv__ = rdiv
     Var.__pow__ = pow
+
