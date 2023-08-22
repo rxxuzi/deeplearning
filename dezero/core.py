@@ -2,6 +2,8 @@ import contextlib
 import weakref
 import numpy as np
 
+import dezero.functions
+
 
 class Config:
     enable_backprop = True #逆伝播を有効/無効
@@ -28,6 +30,10 @@ class Var:
         self.grad = None  # 微分値
         self.creator = None  # 生成者
         self.generation = 0  # 世代
+
+    # =====================================
+    # + - * / ** をオーバーロード
+    # =====================================
 
     def __len__(self):  # 要素数を取得
         return len(self.data)
@@ -79,6 +85,19 @@ class Var:
     def set_creator(self, func):
         self.creator = func
         self.generation = func.generation + 1  # 世代をインクリメント
+
+
+    def reshape(self, *shape):
+        if len(shape) == 1 and isinstance(shape[0], (tuple, list)):
+            shape = shape[0]
+        return dezero.functions.reshape(self,shape)
+
+    def transpose(self):
+        return dezero.functions.transpose(self)
+
+    @property
+    def T(self):
+        return dezero.functions.transpose(self)
 
     def backward(self, retain_grad=False , create_graph = False):
         """

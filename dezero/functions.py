@@ -1,6 +1,11 @@
 import numpy as np
 from dezero.core import *
 
+
+# =============================================================================
+# Basic functions: sin / cos / tanh / exp / log
+# =============================================================================
+
 class Sin(Function):
     def forward(self, xs):
         y = np.sin(xs)
@@ -39,3 +44,40 @@ class Tanh(Function):
 
 def tanh(x):
     return Tanh()(x)
+
+# =============================================================================
+# Tensor operations: reshape / transpose / get_item / expand_dims / flatten
+# =============================================================================
+class Reshape(Function):
+    """
+    テンソルを整形するクラス
+    """
+    def __init__(self, shape):
+        self.shape = shape
+
+    def forward(self, x):
+        self.x_shape = x.shape
+        y = x.reshape(self.shape)
+        return y
+
+    def backward(self, gy):
+        return reshape(gy, self.x_shape)
+
+
+def reshape(x, shape):
+    if x.shape == shape:
+        return as_var(x)
+    return Reshape(shape)(x)
+
+class Transpose(Function):
+    """
+    行列を転置するクラス
+    """
+    def forward(self, x):
+        return np.transpose(x)
+
+    def backward(self, gy):
+        return transpose(gy)
+
+def transpose(x):
+    return Transpose()(x)
