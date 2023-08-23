@@ -3,6 +3,7 @@ import numpy as np
 from dezero import Var
 from dezero import functions as F
 
+
 np.random.seed(0)
 x = np.random.rand(100,1)
 y = 5 + 2 * x + np.random.rand(100,1)
@@ -35,3 +36,15 @@ for i in range(iters):
 
     if i % 5 == 0:
         print(W,b,loss)
+
+# 線形回帰の結果をグラフにプロット
+
+import matplotlib.pyplot as plt
+plt.scatter(x.data, y.data, s = 10,label="Actual Data")
+y_pred = predict(x)  # 予測値を1次元に変換
+plt.plot(x.data, y_pred.data, color="red", label="Predicted Line")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Linear Regression")
+plt.legend()
+plt.show()
