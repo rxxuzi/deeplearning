@@ -41,8 +41,6 @@ for i in range(iters):
 
 import matplotlib.pyplot as plt
 plt.scatter(x.data, y.data, s = 10,label="Actual Data")
-y_pred = predict(x)  # 予測値を1次元に変換
-plt.plot(x.data, y_pred.data, color="red", label="Predicted Line")
 plt.xlabel("x")
 plt.ylabel("y")
 plt.title("Linear Regression")
