@@ -84,7 +84,7 @@ class Var:
         self.creator = func
         self.generation = func.generation + 1  # 世代をインクリメント
 
-
+    #Function class
     def reshape(self, *shape):
         if len(shape) == 1 and isinstance(shape[0], (tuple, list)):
             shape = shape[0]
@@ -93,7 +93,7 @@ class Var:
     def transpose(self):
         return dezero.functions.transpose(self)
 
-    def sum(self , axis= None, keepdims = False):
+    def sum(self , axis = None, keepdims = False):
         return dezero.functions.sum(self,axis,keepdims)
 
     @property

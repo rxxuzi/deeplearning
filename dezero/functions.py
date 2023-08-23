@@ -91,13 +91,14 @@ class Sum(Function):
 
     def forward(self, x):
         self.x_shape = x.shape
-        return x.sum(axis=self.axis, keepdims=self.keepdims)
+        y = x.sum(axis=self.axis, keepdims=self.keepdims)
+        return y
 
     def backward(self, gy):
         gy = utils.reshape_sum_backward(gy, self.x_shape, self.axis, self.keepdims)
         return broadcast_to(gy, self.x_shape)
 
-def sum(x, axis = None , keepdims = None):
+def sum(x, axis = None , keepdims = False):
     return Sum(axis,keepdims)(x)
 
 class BroadcastTo(Function):
@@ -132,3 +133,37 @@ def sum_to(x,shape):
     if x.shape == shape:
         return as_var(x)
     return SumTo(shape)(x)
+
+class MatMul(Function):
+    def forward(self,x,W):
+        out = x.dot(W)
+        return out
+
+    def backward(self,gy):
+        x,W = self.inputs
+        gx = matmul(gy,W.T)
+        gW = matmul(x.T,gy)
+        return gx,gW
+
+def matmul(x,W):
+    return MatMul()(x,W)
+
+# =============================================================================
+# loss function: mean_squared_error / softmax_cross_entropy / sigmoid_cross_entropy / binary_cross_entropy
+# =============================================================================
+
+class MeanSquaredError(Function):
+    def forward(self, x0, x1):
+        diff = x0 - x1
+        y = (diff ** 2).sum() / len(diff)
+        return y
+
+    def backward(self, gy):
+        x0, x1 = self.inputs
+        diff = x0 - x1
+        gx0 = gy * diff * (2. / len(diff))
+        gx1 = -gx0
+        return gx0, gx1
+
+def mean_squared_error(x0, x1):
+    return MeanSquaredError()(x0, x1)
