@@ -1,9 +1,7 @@
 import contextlib
 import weakref
 import numpy as np
-
-import dezero.functions
-
+import dezero
 
 class Config:
     enable_backprop = True #逆伝播を有効/無効
@@ -94,6 +92,9 @@ class Var:
 
     def transpose(self):
         return dezero.functions.transpose(self)
+
+    def sum(self , axis= None, keepdims = False):
+        return dezero.functions.sum(self,axis,keepdims)
 
     @property
     def T(self):

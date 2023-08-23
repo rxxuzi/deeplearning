@@ -1,6 +1,6 @@
 import numpy as np
 from dezero.core import *
-
+from dezero import utils
 
 # =============================================================================
 # Basic functions: sin / cos / tanh / exp / log
@@ -70,14 +70,65 @@ def reshape(x, shape):
     return Reshape(shape)(x)
 
 class Transpose(Function):
-    """
-    行列を転置するクラス
-    """
     def forward(self, x):
-        return np.transpose(x)
+        y = np.transpose(x)
+        return y
 
-    def backward(self, gy):
-        return transpose(gy)
+    def backward(self, gys):
+        return transpose(gys)
 
 def transpose(x):
     return Transpose()(x)
+
+# =============================================================================
+# sum / sum_to / broadcast_to / average / matmul / linear
+# =============================================================================
+
+class Sum(Function):
+    def __init__(self, axis , keepdims):
+        self.axis = axis
+        self.keepdims = keepdims
+
+    def forward(self, x):
+        self.x_shape = x.shape
+        return x.sum(axis=self.axis, keepdims=self.keepdims)
+
+    def backward(self, gy):
+        gy = utils.reshape_sum_backward(gy, self.x_shape, self.axis, self.keepdims)
+        return broadcast_to(gy, self.x_shape)
+
+def sum(x, axis = None , keepdims = None):
+    return Sum(axis,keepdims)(x)
+
+class BroadcastTo(Function):
+    def __init__(self,shape):
+        self.shape = shape
+
+    def forward(self, x):
+        self.x_shape = x.shape
+        return np.broadcast_to(x,self.shape)
+
+    def backward(self, gy):
+        return sum_to(gy, self.x_shape)
+
+def broadcast_to(x,shape):
+    if x.shape == shape:
+        return as_var(x)
+    return BroadcastTo(shape)(x)
+
+class SumTo(Function):
+    def __init__(self, shape):
+        self.shape = shape
+
+    def forward(self, x):
+        self.x_shape = x.shape
+        return utils.sum_to(x, self.shape)
+
+    def backward(self, gy):
+        return broadcast_to(gy,self.x_shape)
+
+
+def sum_to(x,shape):
+    if x.shape == shape:
+        return as_var(x)
+    return SumTo(shape)(x)
