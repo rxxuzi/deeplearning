@@ -48,12 +48,13 @@ for i in range(iters):
     b2.data -= lr * b2.grad.data
 
     if i % (iters/10) == 0:
-        print(W1, b1, W2, b2, loss)
+        print(loss)
 
 # プロット
 import matplotlib.pyplot as plt
 
-plt.title("Non-linear Data Sets")
+title    =  "I :" + str(I) + " H :" + str(H) + " O :" + str(O)
+plt.title(title)
 
 plt.scatter(x, y, s=10, label="Actual Data")
 plt.xlabel('x')
