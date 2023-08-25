@@ -30,3 +30,8 @@ class MLP(Model):
         for l in self.fc_layers:
             x = F.sigmoid(l(x))
         return x
+
+def softmax_simple(x):
+    x = utils.as_variable(x)
+    y = F.softmax(x)
+    return y

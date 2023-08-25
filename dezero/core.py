@@ -313,6 +313,7 @@ def setup():
     Var.__truediv__ = div
     Var.__rtruediv__ = rdiv
     Var.__pow__ = pow
+    Var.__getitem__ = dezero.functions.get_item
 
 class Parameter(Var):
     pass
