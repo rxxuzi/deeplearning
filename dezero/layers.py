@@ -35,6 +35,7 @@ class Layer:
         for name in self._params:
             obj = self.__dict__[name]
 
+            # Layerからパラメータを取り出す
             if isinstance(obj, Layer):
                 yield from obj.params()
             else:
@@ -338,3 +339,6 @@ class BatchNorm(Layer):
             self._init_params(x)
         return F.batch_nrom(x, self.gamma, self.beta, self.avg_mean.data,
                             self.avg_var.data)
+
+
+# =============================================================================
