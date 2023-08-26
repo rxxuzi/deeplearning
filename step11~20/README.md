@@ -7,7 +7,7 @@
 
 世代の追加
 
-![img.png](../docs/gen.png)
+![img.png](../docs/pics/gen.png)
 
 ## step 17
 
