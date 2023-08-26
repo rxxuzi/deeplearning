@@ -8,18 +8,18 @@ $\vec{a}\vec{b} =a_1b_1 + a_2b_2 + \cdots + a_nb_n$
 
 ## 行列の積
 
-$A = \begin{pmatrix} a_{11} & a_{12} & \ldots & a_{1n} \\
+$$A = \begin{pmatrix} a_{11} & a_{12} & \ldots & a_{1n} \\
 a_{21} & a_{22} & \ldots & a_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ a_{m1} & a_{m2} & \ldots & a_{mn} \\
-\end{pmatrix}$
-$B = 
+\end{pmatrix}$$
+$$B =
 \begin{pmatrix}
 b_{11} & b_{12} & \ldots & b_{1p} \\
 b_{21} & b_{22} & \ldots & b_{2p} \\
 \vdots & \vdots & \ddots & \vdots \\
 b_{n1} & b_{n2} & \ldots & b_{np} \\
-\end{pmatrix}$
+\end{pmatrix}$$
 
-$C = A \cdot B = \begin{pmatrix}c_{11} & c_{12} & \ldots & c_{1p} \\c_{21} & c_{22} & \ldots & c_{2p} \\\vdots & \vdots & \ddots & \vdots \\c_{m1} & c_{m2} & \ldots & c_{mp} \\\end{pmatrix}$
+$$C = A \cdot B = \begin{pmatrix}c_{11} & c_{12} & \ldots & c_{1p} \\c_{21} & c_{22} & \ldots & c_{2p} \\\vdots & \vdots & \ddots & \vdots \\c_{m1} & c_{m2} & \ldots & c_{mp} \\\end{pmatrix}$$
 
 ここで、各要素 $c_{ij}$ は次のように計算される：
 
@@ -58,13 +58,12 @@ $y_j = x_1W_{1j} + x_2W_{2j} +x_3W_{3j} + \cdots + x_HW_{Hj}$
 
 より$\frac{\partial y_j}{\partial x_i} = W_{ij}$となる
 
-$\frac{\partial L}{\partial x} 
-= \sum_{j}\frac{\partial L}{\partial y_j}\frac{\partial y_j}{\partial x_i} 
+$\frac{\partial L}{\partial x}
+= \sum_{j}\frac{\partial L}{\partial y_j}\frac{\partial y_j}{\partial x_i}
 = \sum_{j}\frac{\partial L}{\partial y_j} \vec{W_{ij}}
 $
 
-また上の式より、$\frac{\partial L}{\partial x_i}$は 
+また上の式より、$\frac{\partial L}{\partial x_i}$は
 **ベクトル$\frac{\partial L}{\partial \vec{y}}$** と **$\vec{W}$の$i$行目のベクトル**の**内積**によって求めることができる。この関係から次の式が導ける
 
 $\frac{\partial L}{\partial \vec{x}} = \frac{\partial L}{\partial \vec{y}}\vec{W}^T$となる.
-

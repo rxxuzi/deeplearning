@@ -8,13 +8,14 @@ import dezero
 from dezero import optimizers
 import dezero.functions as F
 from dezero.models import MLP
+from dezero.optimizers import SGD,  Adam
 
 def display_progress(epoch, max_iter, percentage = 10):
     if epoch % (max_iter // percentage) == 0:
         print("epoch: {}/{}".format(epoch, max_iter) + " " + str(percentage) + "%")
 
 # Hyperparameters
-max_epoch = 100
+max_epoch = 300
 batch_size = 30
 hidden_size = 10
 lr = 1.0
@@ -23,7 +24,7 @@ lr = 1.0
 x, t = dezero.datasets.get_spiral(train=True)
 # Model :  MLP( hidden size : 10 , output size : 3)
 model = MLP((hidden_size, 3))
-optimizer = optimizers.SGD(lr).setup(model)
+optimizer = optimizers.MomentumSGD(lr).setup(model)
 
 data_size = len(x)
 max_iter = math.ceil(data_size / batch_size)
