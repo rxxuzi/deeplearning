@@ -37,33 +37,35 @@ $C$は$A$の行数と$B$の列数から構成されている
 
 ## 行列の積の逆伝播
 
-各行列の形状は$x = 1 \times D, W = D \times H , y = 1 \times H$
+各行列の形状は
+$x = 1 \times D, W = D \times H , y = 1 \times H$
 とする.
 
-$y = xW$
+$$y = xW$$
 
 という計算を考える。
 **$y$が何らかの計算によって最終的に$L$というスカラが出力される**この$L$の各変数に関する微分を逆伝播で求める
 
 この時、$x$の$i$番目の要素に関する微分$\frac{\partial L}{\partial x_i}$は以下の式で求められる
 
-$\frac{\partial L}{\partial x} = \sum_{j}\frac{\partial L}{\partial y_j}\frac{\partial y_j}{\partial x_i}$
+$$\frac{\partial L}{\partial x} = \sum_{j}\frac{\partial L}{\partial y_j}\frac{\partial y_j}{\partial x_i}$$
 
 上記の式は$x_i$を変化させたときに、$L$がどれだけ変化するのかという**変化の割合**を表している。ここで、$x_i$を変化させた時はベクトル$y$のすべての要素も変化する。そして、$y$の各要素の変化を通じて、最終的に$L$が変化することになる。
 そのため、$x_i$から$L$にいたるチェインルールの経路は複数あり、その総和が$\frac{\partial L}{\partial x_i}$となる。
 
 またこの式は簡略化できる。
 
-$y_j = x_1W_{1j} + x_2W_{2j} +x_3W_{3j} + \cdots + x_HW_{Hj}$
+$$y_j = x_1W_{1j} + x_2W_{2j} +x_3W_{3j} + \cdots + x_HW_{Hj}$$
 
 より$\frac{\partial y_j}{\partial x_i} = W_{ij}$となる
 
-$\frac{\partial L}{\partial x}
+$$\frac{\partial L}{\partial x}
 = \sum_{j}\frac{\partial L}{\partial y_j}\frac{\partial y_j}{\partial x_i}
 = \sum_{j}\frac{\partial L}{\partial y_j} \vec{W_{ij}}
-$
+$$
 
-また上の式より、$\frac{\partial L}{\partial x_i}$は
-**ベクトル$\frac{\partial L}{\partial \vec{y}}$** と **$\vec{W}$の$i$行目のベクトル**の**内積**によって求めることができる。この関係から次の式が導ける
+また上の式より、$\frac{\partial L}{\partial x_i}$ は
+**ベクトル**$\frac{\partial L}{\partial \vec{y}}$ と **$\vec{W}$の$i$行目のベクトル**の**内積**によって求めることができる。この関係から次の式が導ける
 
-$\frac{\partial L}{\partial \vec{x}} = \frac{\partial L}{\partial \vec{y}}\vec{W}^T$となる.
+$$\frac{\partial L}{\partial \vec{x}} = \frac{\partial L}{\partial \vec{y}}\vec{W}^T$$
+となる.
