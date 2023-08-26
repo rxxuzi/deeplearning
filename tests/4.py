@@ -1,67 +1,44 @@
-if '__file__' in globals():
-    import os, sys
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import math
-import numpy as np
-import matplotlib.pyplot as plt
 import dezero
-from dezero import optimizers
-import dezero.functions as F
-from dezero.models import MLP
+import numpy as np
+x, t = dezero.datasets.get_spiral()
+print(x.shape, t.shape)
 
-def display_progress(epoch, max_iter, percentage = 10):
-    if epoch % (max_iter // percentage) == 0:
-        print("epoch: {}/{}".format(epoch, max_iter) + " " + str(percentage) + "%")
+print(x.max(), x.min())
+print(t.max(), t.min())
 
-# Hyperparameters
+import matplotlib.pyplot as plt
+plt.scatter(x[:,0], x[:,1], c=t, s=10)
+plt.show()
+
 max_epoch = 100
 batch_size = 30
 hidden_size = 10
 lr = 1.0
 
-# Datasets
-x, t = dezero.datasets.get_spiral(train=True)
-# Model :  MLP( hidden size : 10 , output size : 3)
-model = MLP((hidden_size, 3))
-optimizer = optimizers.SGD(lr).setup(model)
+model = dezero.models.MLP((hidden_size, 3))
+optimizer = dezero.optimizers.SGD(lr).setup(model)
 
 data_size = len(x)
-max_iter = math.ceil(data_size / batch_size)
+max_iter = data_size // batch_size
 
-logs = []
-# Training
 for epoch in range(max_epoch):
-    # Shuffle index for data
     index = np.random.permutation(data_size)
     sum_loss = 0
-
     for i in range(max_iter):
-        # Generate mini batch data
-        batch_index = index[i * batch_size:(i + 1) * batch_size]
-        batch_x = x[batch_index]
+        batch_index = index[i*batch_size:(i+1)*batch_size]
+        batch = x[batch_index]
         batch_t = t[batch_index]
 
-        # Compute loss and update parameters
-        y = model(batch_x)
-        loss = F.softmax_cross_entropy(y, batch_t)
+        y = model(batch)
+        loss = dezero.functions.softmax_cross_entropy(y, batch_t)
         model.cleargrads()
         loss.backward()
         optimizer.update()
 
         sum_loss += float(loss.data) * len(batch_t)
 
-    # Print loss every epoch
     avg_loss = sum_loss / data_size
-    # print('epoch %d, loss %.2f' % (epoch + 1, avg_loss))
-    logs.append(avg_loss)
-
-
-plt.title("Loss Graph")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.plot(range(1, max_epoch + 1),  logs)
-plt.savefig("loss_graph-max100.png")
-plt.show()
+    # print('epoch %d, loss %f' % (epoch+1, avg_loss))
 
 # ==========================================================
 # Plot boundary area the model predict
@@ -85,11 +62,10 @@ Z = predict_cls.reshape(xx.shape)
 plt.contourf(xx, yy, Z)
 
 # Plot data points of the dataset
-N, CLS_NUM = 100,3
+# N, CLS_NUM = 100,3
 markers = ['o', 'x', '^']
 colors = ['orange', 'blue', 'green']
 for i in range(len(x)):
     c = t[i]
     plt.scatter(x[i][0], x[i][1], s=40,  marker=markers[c], c=colors[c])
 plt.show()
-

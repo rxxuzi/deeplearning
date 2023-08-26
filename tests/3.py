@@ -9,12 +9,8 @@ from dezero import optimizers
 import dezero.functions as F
 from dezero.models import MLP
 
-def display_progress(epoch, max_iter, percentage = 10):
-    if epoch % (max_iter // percentage) == 0:
-        print("epoch: {}/{}".format(epoch, max_iter) + " " + str(percentage) + "%")
-
 # Hyperparameters
-max_epoch = 100
+max_epoch = 300
 batch_size = 30
 hidden_size = 10
 lr = 1.0
@@ -27,7 +23,7 @@ optimizer = optimizers.SGD(lr).setup(model)
 
 data_size = len(x)
 max_iter = math.ceil(data_size / batch_size)
-
+# plot logs
 logs = []
 # Training
 for epoch in range(max_epoch):
@@ -53,15 +49,7 @@ for epoch in range(max_epoch):
     # Print loss every epoch
     avg_loss = sum_loss / data_size
     # print('epoch %d, loss %.2f' % (epoch + 1, avg_loss))
-    logs.append(avg_loss)
 
-
-plt.title("Loss Graph")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.plot(range(1, max_epoch + 1),  logs)
-plt.savefig("loss_graph-max100.png")
-plt.show()
 
 # ==========================================================
 # Plot boundary area the model predict
@@ -85,11 +73,10 @@ Z = predict_cls.reshape(xx.shape)
 plt.contourf(xx, yy, Z)
 
 # Plot data points of the dataset
-N, CLS_NUM = 100,3
+N, CLS_NUM = 100, 3
 markers = ['o', 'x', '^']
 colors = ['orange', 'blue', 'green']
 for i in range(len(x)):
     c = t[i]
     plt.scatter(x[i][0], x[i][1], s=40,  marker=markers[c], c=colors[c])
 plt.show()
-

@@ -154,3 +154,6 @@ class ToInt(AsType):
     def __init__(self, dtype=int):
         super().__init__(dtype)
         self.dtype = dtype
+    # def __init__(self, dtype=int):
+    #     super().__init__(dtype)
+    #     self.dtype = dtype

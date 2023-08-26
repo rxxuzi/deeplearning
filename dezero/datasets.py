@@ -49,7 +49,7 @@ def get_spiral(train=True):
     data_size = num_class * num_data
 
     x = np.zeros((data_size, input_dim), dtype=np.float32)
-    # t = np.zeros(data_size, dtype=np.int)
+    # t = np.zeros(data_size, dtype=np.int)  deprecated
     t = np.zeros(data_size, dtype=int)
 
     for j in range(num_class):
