@@ -40,12 +40,14 @@ class Dataset:
 # =============================================================================
 # Toy datasets
 # =============================================================================
+
 def get_spiral(train=True):
     seed = 1984 if train else 2020
     np.random.seed(seed=seed)
 
     num_data, num_class, input_dim = 100, 3, 2
     data_size = num_class * num_data
+
     x = np.zeros((data_size, input_dim), dtype=np.float32)
     t = np.zeros(data_size, dtype=np.int)
 
