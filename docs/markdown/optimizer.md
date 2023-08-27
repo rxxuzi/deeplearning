@@ -13,6 +13,29 @@ AdaGradの問題点である学習率の減衰を防ぐために、指数移動�
 - **Adam** :
 MomentumとRMSPropの長所を組み合わせた手法で、各パラメータに対してモーメントと学習率の両方を適応的に調整することで、高速かつ安定的な学習が可能になる手法
 
+~~~python
+class Optimizer:
+    def __init__(self):
+        self.target = None
+        self.hooks = []
+    def setup(self, target):
+        self.target = target
+        return self
+    def update(self):
+        params = [p for p in self.target.params() if p.grad is not None]
+        # 前処理
+        for f in self.hooks:
+            f(params)
+        # パラメータの更新
+        for param in params:
+            self.update_one(param)
+    def update_one(self, param):
+        raise NotImplementedError()
+    def add_hook(self, f):
+        self.hooks.append(f)
+~~~
+
+
 >【最適化手法】SGD・Momentum・AdaGrad・RMSProp・Adamを図と数式で理解しよう<https://kunassy.com/oprimizer/>
 
 > SGD、Momentum、RMSprop、Adam区别与联系 - 知乎. <https://zhuanlan.zhihu.com/p/32488889>

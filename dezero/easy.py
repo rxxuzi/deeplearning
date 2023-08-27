@@ -30,7 +30,7 @@ class Plot:
         if self.labels == None:
             plt.plot(self.x, self.y)
         else:
-            for i in range(len(self.x)):
+            for i in enumerate(y):
                 plt.plot(self.x, self.y[i], label = self.labels[i])
 
         plt.xlabel(self.lb_x)
@@ -43,10 +43,11 @@ def plot_graph(x,y):
 
 
 class Progress:
-    def __init__(self, max, progress = 0,percentage = 10):
+    def __init__(self, max, progress = 0,percentage = 10 , bar_width = 20):
         self.max = max
         self.percentage = percentage
         self.progress = progress
+        self.total_width = bar_width
 
     def update(self, epoch):
         self.progress = (epoch) / self.max
@@ -57,9 +58,8 @@ class Progress:
             print("p should be between 0 and 1")
             return
 
-        total_width = 23  # Total width of the bar
-        filled_width = int(self.progress * total_width)
-        empty_width = total_width - filled_width
+        filled_width = int(self.progress * self.total_width)
+        empty_width = self.total_width - filled_width
 
         if self.progress == 1:
             bar = "[" + "#" * filled_width + "=" * empty_width + "]" + "100.00%"
@@ -69,6 +69,11 @@ class Progress:
         print(bar)
 
     def update_bar(self, epoch):
+        """
+
+        :param epoch: 進捗数
+        :return: progress_bar()
+        """
         self.progress = (epoch) / self.max
         self.percentage = self.progress * 100
         self.progress_bar()

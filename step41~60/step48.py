@@ -9,22 +9,7 @@ from dezero import optimizers
 import dezero.functions as F
 from dezero.models import MLP
 from dezero.optimizers import SGD,  Adam
-
-
-class Progress:
-    def __init__(self, max_epoch, progress = 0,percentage = 10):
-        self.max_epoch = max_epoch
-        self.percentage = percentage
-        self.progress = progress
-
-    def update(self, epoch):
-        self.progress = (epoch+1) / self.max_epoch
-        self.percentage = self.progress * 100
-
-    def progress_bar(self):
-        bar = "[==========================]"
-        bar = bar[:int(self.percentage)] + "#" + bar[int(self.percentage)+1:]
-        print(bar, end = "\r")
+from dezero import Progress
 
 # Hyperparameters
 max_epoch = 300
@@ -71,8 +56,7 @@ for epoch in range(max_epoch):
     # print('epoch %d, loss %.2f' % (epoch + 1, avg_loss))
     logs.append(avg_loss)
 
-    p.update(epoch)
-    p.progress_bar()
+    p.update_bar(epoch)
 
 
 plt.xlabel("Epoch")
