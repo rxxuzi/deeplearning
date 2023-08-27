@@ -214,6 +214,17 @@ def sum_to(x,shape):
         return as_var(x)
     return SumTo(shape)(x)
 
+
+
+def average(x, axis=None, keepdims=False):
+    x = as_var(x)
+    y = sum(x, axis, keepdims)
+    return y * (y.data.size / x.data.size)
+
+
+mean = average
+
+
 class MatMul(Function):
     def forward(self,x,W):
         out = x.dot(W)
@@ -512,3 +523,11 @@ class Clip(Function):
 
 def clip(x, x_min, x_max):
     return Clip(x_min, x_max)(x)
+
+def accuary(y , t):
+    y , t =  as_var(y) , as_var(t)
+    pred = y.data.argmax(axis = 1).reshape(t.shape)
+    result = (pred == t.data)
+    acc = result.mean()
+    print(acc)
+    return Var(as_var(acc))

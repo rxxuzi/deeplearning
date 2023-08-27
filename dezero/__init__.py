@@ -13,6 +13,7 @@ from dezero.models import Model
 from dezero.datasets import Dataset
 from dezero.dataloaders import DataLoader
 # from dezero.dataloaders import SeqDataLoader
+from dezero.easy import Plot , Progress
 
 import dezero.datasets
 # import dezero.dataloaders
