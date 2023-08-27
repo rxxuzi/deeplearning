@@ -10,6 +10,11 @@ from dezero.transforms import Compose, Flatten, ToFloat, Normalize
 
 class Dataset:
     def __init__(self, train=True, transform=None, target_transform=None):
+        """
+        :param train: T/F : 学習用/テスト用
+        :param transform:　入力データに対する変換処理
+        :param target_transform: 1つのラベルに対する変換処理
+        """
         self.train = train
         self.transform = transform
         self.target_transform = target_transform
@@ -334,3 +339,22 @@ def save_cache_npz(data, label, filename, train=False):
         raise
     print(" Done")
     return filepath
+
+# =============================================================================
+# Big Data
+# =============================================================================
+
+class BigData(Dataset):
+    def __getitem__(index):
+        x = np.load('data/{}.npy'.format(index))
+        t = np.load('label/{}.npy'.format(index))
+        return x, t
+
+    def __len__(self):
+        return 1000000
+
+def test_bigdata():
+    dataset = BigData()
+    x, t = dataset[0]
+    assert (x.shape == (32, 32, 3))
+    assert (t.shape == (1,))

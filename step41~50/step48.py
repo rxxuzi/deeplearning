@@ -10,24 +10,39 @@ import dezero.functions as F
 from dezero.models import MLP
 from dezero.optimizers import SGD,  Adam
 
-def display_progress(epoch, max_iter, percentage = 10):
-    if epoch % (max_iter // percentage) == 0:
-        print("epoch: {}/{}".format(epoch, max_iter) + " " + str(percentage) + "%")
+
+class Progress:
+    def __init__(self, max_epoch, progress = 0,percentage = 10):
+        self.max_epoch = max_epoch
+        self.percentage = percentage
+        self.progress = progress
+
+    def update(self, epoch):
+        self.progress = (epoch+1) / self.max_epoch
+        self.percentage = self.progress * 100
+
+    def progress_bar(self):
+        bar = "[==========================]"
+        bar = bar[:int(self.percentage)] + "#" + bar[int(self.percentage)+1:]
+        print(bar, end = "\r")
 
 # Hyperparameters
 max_epoch = 300
 batch_size = 30
 hidden_size = 10
-lr = 1.0
+lr = 3.0
 
 # Datasets
 x, t = dezero.datasets.get_spiral(train=True)
 # Model :  MLP( hidden size : 10 , output size : 3)
 model = MLP((hidden_size, 3))
+# Optimizer
 optimizer = optimizers.MomentumSGD(lr).setup(model)
-
+# Data size
 data_size = len(x)
 max_iter = math.ceil(data_size / batch_size)
+
+p = Progress(max_epoch)
 
 logs = []
 # Training
@@ -56,12 +71,13 @@ for epoch in range(max_epoch):
     # print('epoch %d, loss %.2f' % (epoch + 1, avg_loss))
     logs.append(avg_loss)
 
+    p.update(epoch)
+    p.progress_bar()
 
-plt.title("Loss Graph")
+
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
 plt.plot(range(1, max_epoch + 1),  logs)
-plt.savefig("loss_graph-max100.png")
 plt.show()
 
 # ==========================================================

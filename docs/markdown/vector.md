@@ -11,15 +11,22 @@ $\vec{a}\vec{b} =a_1b_1 + a_2b_2 + \cdots + a_nb_n$
 $$A = \begin{pmatrix} a_{11} & a_{12} & \ldots & a_{1n} \\
 a_{21} & a_{22} & \ldots & a_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ a_{m1} & a_{m2} & \ldots & a_{mn} \\
 \end{pmatrix}$$
-$$B =
+
+$$
+B =
 \begin{pmatrix}
 b_{11} & b_{12} & \ldots & b_{1p} \\
 b_{21} & b_{22} & \ldots & b_{2p} \\
 \vdots & \vdots & \ddots & \vdots \\
 b_{n1} & b_{n2} & \ldots & b_{np} \\
-\end{pmatrix}$$
+\end{pmatrix}
+$$
 
-$$C = A \cdot B = \begin{pmatrix}c_{11} & c_{12} & \ldots & c_{1p} \\c_{21} & c_{22} & \ldots & c_{2p} \\\vdots & \vdots & \ddots & \vdots \\c_{m1} & c_{m2} & \ldots & c_{mp} \\\end{pmatrix}$$
+$$
+C = A \cdot B =
+\begin{pmatrix}c_{11} & c_{12} & \ldots & c_{1p} \\c_{21} & c_{22} & \ldots & c_{2p} \\
+\vdots & \vdots & \ddots & \vdots \\c_{m1} & c_{m2} & \ldots & c_{mp} \\
+\end{pmatrix}$$
 
 ここで、各要素 $c_{ij}$ は次のように計算される：
 
@@ -44,14 +51,16 @@ $x = 1 \times D, W = D \times H , y = 1 \times H$
 $$y = xW$$
 
 という計算を考える。
-**$y$が何らかの計算によって最終的に$L$というスカラが出力される**この$L$の各変数に関する微分を逆伝播で求める
+**$y$が何らかの計算によって最終的に $L$ というスカラが出力される**この $L$ の各変数に関する微分を逆伝播で求める
 
-この時、$x$の$i$番目の要素に関する微分$\frac{\partial L}{\partial x_i}$は以下の式で求められる
+この時、xのi番目の要素に関する微分
+$\frac{\partial L}{\partial x_i}$は以下の式で求められる
 
 $$\frac{\partial L}{\partial x} = \sum_{j}\frac{\partial L}{\partial y_j}\frac{\partial y_j}{\partial x_i}$$
 
 上記の式は$x_i$を変化させたときに、$L$がどれだけ変化するのかという**変化の割合**を表している。ここで、$x_i$を変化させた時はベクトル$y$のすべての要素も変化する。そして、$y$の各要素の変化を通じて、最終的に$L$が変化することになる。
-そのため、$x_i$から$L$にいたるチェインルールの経路は複数あり、その総和が$\frac{\partial L}{\partial x_i}$となる。
+そのため、$x_i$から$L$にいたるチェインルールの経路は複数あり、その総和が
+$\frac{\partial L}{\partial x_i}$となる。
 
 またこの式は簡略化できる。
 

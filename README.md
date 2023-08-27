@@ -1,3 +1,6 @@
-# My First DL Project
+# My First DeepLearning Project
 
 I'll do my best to see how much I can cram in over the summer break.
+
+Development documentation and notes are in [docs](docs)
+
