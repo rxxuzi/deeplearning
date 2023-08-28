@@ -5,33 +5,24 @@ import matplotlib.pyplot as plt
 
 
 class Plot:
-    def __init__(self, x, y, lb_x = "x",  lb_y = "y", title = "Graph"):
+    def __init__(self, x, y, xlabel ="x", ylabel ="y", title ="Graph"):
         self.x = x
         self.y = y
-        self.lb_x = lb_x
-        self.lb_y = lb_y
+        self.lb_x = xlabel
+        self.lb_y = ylabel
         self.title = title
         self.labels = None
-
-    def label(self, lb_x, lb_y, title):
-        self.lb_x = lb_x
-        self.lb_y = lb_y
-        self.title = title
-    def set_label(self, lb_x, lb_y, title):
-        self.lb_x = lb_x
-        self.lb_y = lb_y
-        self.title = title
 
     def set_data(self, x, y):
         self.x = x
         self.y = y
 
     def display(self):
-        if self.labels == None:
+        if self.x != None and self.y != None:
             plt.plot(self.x, self.y)
-        else:
-            for i in enumerate(y):
-                plt.plot(self.x, self.y[i], label = self.labels[i])
+
+            if self.labels != None:
+                plt.legend(self.labels)
 
         plt.xlabel(self.lb_x)
         plt.ylabel(self.lb_y)

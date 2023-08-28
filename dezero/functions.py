@@ -305,7 +305,6 @@ class ReLU(Function):
         gx = gy * mask
         return gx
 
-
 def relu(x):
     return ReLU()(x)
 
