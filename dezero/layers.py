@@ -64,7 +64,8 @@ class Layer:
                 params_dict[key] = obj
 
     def save_weights(self, path):
-        self.to_cpu()
+        # データがメインメモリ上にある事を保証
+        # self.to_cpu()
 
         params_dict = {}
         self._flatten_params(params_dict)
