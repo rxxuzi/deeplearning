@@ -11,7 +11,7 @@ $$
 
 ## 1.確率的勾配降下法 (Stochastic Gradient Descent: SGD)
 
-損失関数 $E$ とパラメータ $w$ の関係を考えるとき、損失の勾配は以下のように表せる:
+損失関数 $E$ とパラメータ w の関係を考えるとき、損失の勾配は以下のように表せる:
 
 $$
 \nabla E(w) = \frac{\partial E}{\partial w}
@@ -38,6 +38,7 @@ $$
 ## 3.モメンタム (Momentum)
 
 モメンタムを用いた更新は次の式で表せる:
+
 $$
 v_{\text{new}} = \beta v_{\text{old}} + (1 - \beta) \nabla E(w_{\text{old}}) 
 $$
