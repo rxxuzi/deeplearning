@@ -7,14 +7,17 @@ import dezero.functions as F
 from dezero import optimizers
 from dezero import DataLoader
 from dezero.models import MLP
+from dezero import test_mode
 
 dropout_ratio = 0.6
 x = np.ones(10)
+print(x)
 
-mask = np.random.rand(10) > dropout_ratio
-y = x * mask
+#学習時
+y = F.dropout(x)
 print(y)
 
-scale = 1 - dropout_ratio
-y = x * scale
-print(y)
+#テスト時
+with test_mode():
+    y = F.dropout(x)
+    print(y)
