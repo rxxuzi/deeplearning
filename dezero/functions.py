@@ -636,3 +636,21 @@ def batch_nrom(x, gamma, beta, mean, var, decay=0.9, eps=2e-5):
 def embed_id(x, W):
     return W[x]
 
+# =============================================================================
+# conv2d / col2im / im2col / basic_math
+# =============================================================================
+from dezero.conv import conv2d
+from dezero.conv import deconv2d
+from dezero.conv import conv2d_simple
+from dezero.conv import im2col
+from dezero.conv import col2im
+from dezero.conv import pooling_simple
+from dezero.conv import pooling
+from dezero.conv import average_pooling
+from dezero.core import add
+from dezero.core import sub
+from dezero.core import rsub
+from dezero.core import mul
+from dezero.core import div
+from dezero.core import neg
+from dezero.core import pow

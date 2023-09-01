@@ -1,5 +1,7 @@
 # Documentation
 
+[Neural Network / ニューラルネットワークの基礎](nn.md)
+
 [Function / 関数](function.md)
 
 [SGD / 損失関数の最小化](sgd.md) 

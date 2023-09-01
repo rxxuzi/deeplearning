@@ -95,22 +95,7 @@ class Var:
         self.creator = func
         self.generation = func.generation + 1  # 世代をインクリメント
 
-    #Function class
-    def reshape(self, *shape):
-        if len(shape) == 1 and isinstance(shape[0], (tuple, list)):
-            shape = shape[0]
-        return dezero.functions.reshape(self,shape)
-
-    def transpose(self):
-        return dezero.functions.transpose(self)
-
-    def sum(self , axis = None, keepdims = False):
-        return dezero.functions.sum(self,axis,keepdims)
-
-    @property
-    def T(self):
-        return dezero.functions.transpose(self)
-
+    # BackWard
     def backward(self, retain_grad=False , create_graph = False):
         """
         :param retain_grad: 全ての変数が微分を保持するか(Falseの場合、微分値をリセット)
@@ -163,6 +148,34 @@ class Var:
                     if x.creator is not None:
                         funcs.append(x.creator)
                         x.unchain()
+
+    def reshape(self, *shape):
+        if len(shape) == 1 and isinstance(shape[0], (tuple, list)):
+            shape = shape[0]
+        return dezero.functions.reshape(self, shape)
+
+    def transpose(self, *axes):
+        if len(axes) == 0:
+            axes = None
+        elif len(axes) == 1:
+            if isinstance(axes[0], (tuple, list)) or axes[0] is None:
+                axes = axes[0]
+        return dezero.functions.transpose(self)
+
+    @property
+    def T(self):
+        return dezero.functions.transpose(self)
+
+    def sum(self, axis=None, keepdims=False):
+        return dezero.functions.sum(self, axis, keepdims)
+
+    def to_cpu(self):
+        if self.data is not None:
+            self.data = dezero.cuda.as_numpy(self.data)
+
+    def to_gpu(self):
+        if self.data is not None:
+            self.data = dezero.cuda.as_cupy(self.data)
 
     # toString
     def __repr__(self):

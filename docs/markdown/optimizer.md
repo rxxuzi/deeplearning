@@ -1,39 +1,91 @@
-# Optimizer
+了解しました。以下はOptimizerに関するレポートです。
 
-これらは、勾配降下法（SGD）を改良したものである
+---
 
-- **SGD** : 
-    各パラメータに対して同じ学習率で勾配方向に更新する基本的な手法です。
-- **Momentum** :
-SGDに慣性項を加えて、過去の勾配の方向に加速することで、局所最適解を回避したり、谷間を早く抜け出したりする手法
-- **AdaGrad** :
-各パラメータに対して学習率を適応的に調整することで、勾配が小さいパラメータも十分に更新できるようにする手法
-- **RMSProp** :
-AdaGradの問題点である学習率の減衰を防ぐために、指数移動平均を用いて勾配の二乗和を計算する手法。
-- **Adam** :
-MomentumとRMSPropの長所を組み合わせた手法で、各パラメータに対してモーメントと学習率の両方を適応的に調整することで、高速かつ安定的な学習が可能になる手法
+# Optimizerについて
 
-~~~python
-class Optimizer:
-    def __init__(self):
-        self.target = None
-        self.hooks = []
-    def setup(self, target):
-        self.target = target
-        return self
-    def update(self):
-        params = [p for p in self.target.params() if p.grad is not None]
-        # 前処理
-        for f in self.hooks:
-            f(params)
-        # パラメータの更新
-        for param in params:
-            self.update_one(param)
-    def update_one(self, param):
-        raise NotImplementedError()
-    def add_hook(self, f):
-        self.hooks.append(f)
-~~~
+深層学習におけるOptimizerは、モデルの重みを更新して学習を進める際のアルゴリズムを指す。以下、主要なOptimizerとその特徴について詳しく解説します。
+
+## 1. SGD (確率的勾配降下法: Stochastic Gradient Descent)
+
+SGDは最も基本的なOptimizerであり、各更新で1つのサンプルまたはミニバッチの勾配を計算して重みを更新する。
+
+**重みの更新式:**
+$$
+w_{t+1} = w_t - \eta \nabla E(w_t)
+$$
+ここで、\( \eta \) は学習率、\( \nabla E(w_t) \) は重み \( w_t \) における損失 \( E \) の勾配を示す。
+
+## 2. Momentum
+
+Momentumは、過去の勾配の情報を利用して局所的な最適解に収束するのを防ぎ、収束を加速するための手法。
+
+**重みの更新式:**
+$$
+v_{t+1} = \mu v_t - \eta \nabla E(w_t)
+$$
+$$
+w_{t+1} = w_t + v_{t+1}
+$$
+
+ここで、\( \mu \) はモメンタム係数、\( v_t \) は時刻 \( t \) における勾配の移動平均を表す。
+
+## 3. AdaGrad
+
+AdaGradは、学習率を各パラメータごとに適応的に調整するOptimizer。
+
+**重みの更新式:**
+$$
+G_{t+1} = G_t + \nabla E(w_t) \odot \nabla E(w_t)
+$$
+$$
+w_{t+1} = w_t - \frac{\eta}{\sqrt{G_{t+1} + \epsilon}} \odot \nabla E(w_t)
+$$
+
+ここで、\( G_t \) は勾配の二乗の累積、\( \odot \) は要素ごとの積、\( \epsilon \) は0で割るのを防ぐための小さな定数。
+
+## 4. RMSProp
+
+RMSPropはAdaGradの問題を改善するために提案されたもので、過去のすべての勾配を均等に考慮するのではなく、最近の勾配の情報を主に利用する。
+
+**重みの更新式:**
+$$
+G_{t+1} = \rho G_t + (1 - \rho) \nabla E(w_t) \odot \nabla E(w_t)
+$$
+$$
+w_{t+1} = w_t - \frac{\eta}{\sqrt{G_{t+1} + \epsilon}} \odot \nabla E(w_t)
+$$
+
+ここで、\( \rho \) は減衰率。
+
+## 5. Adam
+
+AdamはMomentumとRMSPropのアイディアを組み合わせたOptimizer。移動平均と移動分散をそれぞれ計算し、それを使って重みを更新する。
+
+**重みの更新式:**
+$$
+m_{t+1} = \beta_1 m_t + (1 - \beta_1) \nabla E(w_t)
+$$
+$$
+v_{t+1} = \beta_2 v_t + (1 - \beta_2) \nabla E(w_t) \odot \nabla E(w_t)
+$$
+$$
+\hat{m}_{t+1} = \frac{m_{t+1}}{1 - \beta_1^{t+1}}
+$$
+$$
+\hat{v}_{t+1} = \frac{v_{t+1}}{1 - \beta_2^{t+1}}
+$$
+$$
+w_{t+1} = w_t - \frac{\eta}{\sqrt{\hat{v}_{t+1} + \epsilon}} \odot \hat{m}_{t+1}
+$$
+
+ここで、\( \beta_1 \) と \( \beta_2 \) はハイパーパラメータ、
+
+\( m_t \) と \( v_t \) はそれぞれ勾配の移動平均と移動分散を表す。
+
+---
+
+以上が、Optimizerに関する主要な手法とその特徴についてのレポートです。これらのOptimizerは、様々な深層学習のタスクにおいて利用され、モデルの学習の効率や性能に大きな影響を与える要素となっています。
 
 
 >【最適化手法】SGD・Momentum・AdaGrad・RMSProp・Adamを図と数式で理解しよう<https://kunassy.com/oprimizer/>
