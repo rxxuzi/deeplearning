@@ -110,3 +110,9 @@ class Square(Function):
 
 def square(x):
     return Square()(x)
+
+x = Var(np.array(4.0))
+y = add(square(x),square(x))
+print(y.data)
+y.backward(retain_grad=True)
+print(x.grad)

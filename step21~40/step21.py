@@ -187,5 +187,5 @@ x = Var(np.array(
 y = x * 3.0
 print(y.data)
 
-y = 5.0 + x
+y = x + 5.0
 print(y.data)

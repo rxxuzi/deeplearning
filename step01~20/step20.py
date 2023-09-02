@@ -171,6 +171,14 @@ x = Var(np.array(
      [7,8,9]]
 ))
 
+r = Var(np.array(
+    [[1,2,3],
+     [4,5,6],
+     [7,8,9]]
+))
+
+print(x * r)
+
 n = Var(np.array([2,4,6]))
 
 a = Var(np.array(3.0))
@@ -185,8 +193,8 @@ print(a.grad)
 print(b.grad)
 
 #　行列x * スカラ a
-y = x * a
+v1 = x * a
 print(y.data)
 
-y = x * n
+v2 = x * n
 print(y.data)

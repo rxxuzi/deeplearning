@@ -1,7 +1,7 @@
-import contextlib
-import weakref
-import numpy as np
 import dezero
+import weakref
+import contextlib
+import numpy as np
 
 class Config:
     enable_backprop = True #逆伝播を有効/無効
@@ -21,10 +21,6 @@ def test_mode():
 
 def no_grad():
     return using_config('enable_backprop', False)
-
-
-def test_mode():
-    return using_config('train', False)
 
 class Var:
     __array_priority__ = 200

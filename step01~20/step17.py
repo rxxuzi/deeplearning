@@ -94,7 +94,12 @@ class Square(Function):
 def square(x):
     return Square()(x)
 
+sum = 0
 
 for i in range(10):
     x = Var(np.random.randn(10000))  # big data
     y = square(square(square(x)))
+    sum = sum + y.data
+
+print(sum)
+

@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def v(*x):
+def as_var(*x):
     return np.array(x)
 
 
@@ -117,6 +117,4 @@ a = square(x)  # x^2
 b = add(square(a), square(a))  # x^4 + x^4
 b.backward()  # 微分
 # b' = 4x^3 + 4x^3
-
-
-print(x.grad)  # 4.0
+print(x.grad)  # 64.0
