@@ -388,7 +388,6 @@ def mean_squared_error_simple(x0, x1):
     y = sum(diff ** 2) / len(diff)
     return y
 
-
 class MeanSquaredError(Function):
     def forward(self, x0, x1):
         diff = x0 - x1
@@ -405,7 +404,6 @@ class MeanSquaredError(Function):
 
 def mean_squared_error(x0, x1):
     return MeanSquaredError()(x0, x1)
-
 
 def softmax_cross_entropy_simple(x, t):
     x, t = as_var(x), as_var(t)

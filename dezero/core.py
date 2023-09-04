@@ -135,6 +135,9 @@ class Var:
                 for y in f.outputs:
                     y().grad = None  # y is weakref
 
+    def unchain(self):
+        self.creator = None
+
     def unchain_backward(self):
         if self.creator is not None:
             funcs = [self.creator]

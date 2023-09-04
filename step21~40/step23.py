@@ -15,8 +15,9 @@ def matyas (x , y):
     z = 0.26 * (x ** 2 + y ** 2) - 0.48 * x * y
     return z
 
-x = Var(np.array(3.0))
-y = Var(np.array(5.0))
+x = Var(np.array(1.0))
+y = Var(np.array(1.0))
 z = matyas(x, y)
 z.backward()
+print(z.data)
 print(x.grad , y.grad)
