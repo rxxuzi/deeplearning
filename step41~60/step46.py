@@ -10,7 +10,7 @@ x = np.random.rand(100, 1)
 y = np.sin(2 * np.pi * x) + np.random.rand(100, 1)
 
 lr = 0.2
-max_iter = 10000
+max_iter = 1000
 hidden_size = 10
 
 model = MLP((hidden_size, 1))
@@ -24,5 +24,6 @@ for i in range(max_iter):
     loss.backward()
 
     optimizer.update()
-    if i % 1000 == 0:
+    if i % (max_iter / 10 )== 0:
         print(loss)
+
