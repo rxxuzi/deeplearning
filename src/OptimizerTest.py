@@ -7,8 +7,7 @@ import matplotlib.pyplot as plt
 import dezero
 from dezero import optimizers
 import dezero.functions as F
-from dezero.models import MLP
-from dezero.optimizers import SGD,  Adam
+from dezero.models import MLP,VGG16
 from dezero import Progress
 
 # Hyperparameters
@@ -22,13 +21,13 @@ x, t = dezero.datasets.get_spiral(train=True)
 # Model :  MLP( hidden size : 10 , output size : 3)
 model = MLP((hidden_size, 3))
 # Optimizer
-optimizer = optimizers.MomentumSGD(lr).setup(model)
+optimizer = optimizers.Adam(lr).setup(model)
 # Data size
 data_size = len(x)
 max_iter = math.ceil(data_size / batch_size)
-
+# Progress bar
 p = Progress(max_epoch)
-
+# Log
 logs = []
 # Training
 for epoch in range(max_epoch):
@@ -93,4 +92,3 @@ for i in range(len(x)):
     c = t[i]
     plt.scatter(x[i][0], x[i][1], s=40,  marker=markers[c], c=colors[c])
 plt.show()
-
