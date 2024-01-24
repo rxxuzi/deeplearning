@@ -161,7 +161,7 @@ $$
 
 # 4. 正規化 (Normalization)
 
-![(Batch ,Layer, Instance )Normalization](image.png)
+![(Batch ,Layer, Instance )Normalization](../pics/description/Normalization.png)
 
 正規化は、ニューラルネットワークの学習を助けるために入力データや層の出力を特定の範囲または分布に変換する手法である。特に、深いニューラルネットワークでは、正規化が無ければ学習が不安定になったり、収束が遅くなることが知られている。
 
